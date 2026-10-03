@@ -347,6 +347,168 @@
             color: var(--text-light);
             margin-bottom: 28px;
         }
+        .project-upload-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: -8px 0 28px;
+            font-size: 0.85rem;
+            color: #7b8ba3;
+        }
+        .project-upload-row .reset-btn {
+            margin-top: 0;
+        }
+        tr.from-project td {
+            background: rgba(240, 200, 67, 0.10);
+        }
+        tr.from-project.needs-check td:first-child {
+            box-shadow: inset 4px 0 0 #ff8a4c;
+        }
+        .project-report {
+            background: var(--card-bg);
+            border: 1px solid var(--gold);
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            color: var(--text-light);
+        }
+        .project-report h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+        .project-report h5,
+        .project-result h5 {
+            font-size: 1rem;
+            margin: 12px 0 6px;
+        }
+        .project-unmatched h5 {
+            color: #ff8a4c;
+        }
+        .project-check h5 {
+            color: var(--gold);
+        }
+        .project-report ul,
+        .project-result ul {
+            margin: 0 0 8px 20px;
+            font-size: 0.9rem;
+        }
+        .project-report li,
+        .project-result li {
+            margin-bottom: 6px;
+            overflow-wrap: anywhere;
+        }
+        .project-report small,
+        .project-result small {
+            display: block;
+            color: #7b8ba3;
+        }
+        .project-notes,
+        .project-cost {
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .project-cost {
+            color: #7b8ba3;
+        }
+        .project-modal {
+            width: min(680px, calc(100vw - 24px));
+            max-height: calc(100vh - 24px);
+            margin: auto;
+            padding: 24px;
+            background: var(--card-bg);
+            color: var(--text-light);
+            border: 1px solid var(--gold);
+            border-radius: 24px;
+            overflow-y: auto;
+        }
+        .project-modal::backdrop {
+            background: rgba(3, 8, 17, 0.75);
+        }
+        .project-modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .project-modal h3 {
+            color: #fff;
+            font-size: 1.4rem;
+        }
+        .project-close {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 2rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 6px;
+        }
+        .project-hint {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .project-modal label {
+            display: block;
+            margin: 14px 0 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .project-modal input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-dim);
+            background: #0b1424;
+            color: #fff;
+            font: inherit;
+        }
+        .project-modal input:focus-visible,
+        .project-modal button:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+        }
+        .project-submit {
+            margin-top: 18px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--deep-blue);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .project-submit:disabled {
+            opacity: 0.6;
+            cursor: progress;
+        }
+        .project-status {
+            min-height: 1.5em;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+        .project-status.is-error {
+            color: #ff8a4c;
+        }
+        .project-summary {
+            color: #fff;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        .project-details {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .project-details summary {
+            cursor: pointer;
+            color: var(--gold);
+        }
         .price-category {
             background: var(--card-bg);
             border-radius: 24px;
@@ -854,6 +1016,10 @@
 
             <div id="price-pane" class="tab-pane">
                 <p class="price-intro">Цены за монтажные работы, без стоимости оборудования и материалов. УСН, без НДС. Нажмите на раздел, чтобы раскрыть список.</p>
+                <div class="project-upload-row">
+                    <button type="button" class="reset-btn" id="projectBtn"><i class="fas fa-file-upload"></i> Расчёт по проекту</button>
+                    <span>для сотрудников, по паролю</span>
+                </div>
                     <details class="price-category" open>
                         <summary><span class="cat-title"><i class="fas fa-fire-extinguisher"></i> Пожарная сигнализация</span><span class="cat-sum">0 ₽</span></summary>
                         <div class="table-wrap">
@@ -1188,6 +1354,7 @@
                         </table>
                         </div>
                     </details>
+                <div class="project-report" id="projectReport" hidden></div>
                 <div class="total-price-block">
                     <h4>Общая стоимость работ</h4>
                     <div class="total-sum" id="grandTotal">0 ₽</div>
@@ -1228,6 +1395,25 @@
         <p style="margin-top: 12px;"><a href="privacy.html">Политика конфиденциальности</a></p>
     </div>
 </footer>
+
+<dialog class="project-modal" id="projectModal" aria-labelledby="projectTitle">
+    <form id="projectForm">
+        <div class="project-modal-head">
+            <h3 id="projectTitle">Расчёт по проекту</h3>
+            <button type="button" class="project-close" id="projectClose" aria-label="Закрыть">×</button>
+        </div>
+        <p class="project-hint">Загрузите спецификацию, смету или проект. Нейросеть найдёт оборудование и подставит количества в калькулятор. Результат предварительный — проверьте его перед отправкой заказчику.</p>
+        <label for="projectPassword">Пароль</label>
+        <input type="password" id="projectPassword" autocomplete="current-password" required>
+        <label for="projectFiles">Файлы: PDF, Word (.docx), Excel, изображения и скриншоты</label>
+        <input type="file" id="projectFiles" multiple required accept=".pdf,.docx,.docm,.xlsx,.xlsm,.xls,.ods,.csv,.txt,image/*,.heic,.heif,.tif,.tiff">
+        <label for="projectPages">Страницы PDF (необязательно)</label>
+        <input type="text" id="projectPages" inputmode="numeric" placeholder="например 16-17; пусто — все страницы">
+        <button type="submit" class="project-submit" id="projectSubmit">Рассчитать</button>
+        <p class="project-status" id="projectStatus" role="status" aria-live="polite"></p>
+        <div class="project-result" id="projectResult" hidden></div>
+    </form>
+</dialog>
 
 <div class="cookie-banner" id="cookieBanner" role="region" aria-label="Уведомление об использовании cookie" hidden>
     <div>Сайт использует файлы cookie и сервис Яндекс.Метрика для сбора статистики посещений. Продолжая пользоваться сайтом, вы соглашаетесь с <a href="privacy.html">политикой конфиденциальности</a>.</div>
@@ -1304,5 +1490,6 @@
         try { localStorage.setItem('cookieAccepted', '1'); } catch (e) {}
     });
 </script>
+<script src="project-estimate.js?v=2" defer></script>
 </body>
 </html>
