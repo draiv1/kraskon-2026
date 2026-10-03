@@ -28,7 +28,11 @@ function fail(int $code, string $message): never
 }
 
 // Папка с настройками лежит вне каталога сайта, чтобы её нельзя было открыть по ссылке.
+// Ищем её рядом с папкой www или внутри www рядом с папкой сайта.
 $privateDir = getenv('KRASKON_PRIVATE_DIR') ?: dirname(__DIR__, 2) . '/kraskon-private';
+if (!is_file($privateDir . '/config.php') && is_file(dirname(__DIR__) . '/kraskon-private/config.php')) {
+    $privateDir = dirname(__DIR__) . '/kraskon-private';
+}
 $configFile = $privateDir . '/config.php';
 $config = is_file($configFile) ? require $configFile : null;
 $configured = is_array($config) && !empty($config['api_key']) && !empty($config['password']);
