@@ -532,7 +532,54 @@
             font-size: 0.85rem;
             border-top: 1px solid var(--border-dim);
         }
+        footer a {
+            color: var(--text-light);
+        }
+        footer a:hover {
+            color: var(--gold);
+        }
+        .cookie-banner {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            bottom: 16px;
+            z-index: 200;
+            max-width: 760px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .cookie-banner[hidden] {
+            display: none;
+        }
+        .cookie-banner a {
+            color: var(--gold);
+        }
+        .cookie-banner button {
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--deep-blue);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
         @media (max-width: 760px) {
+            .cookie-banner {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
             .hero-grid {
                 grid-template-columns: 1fr;
                 text-align: center;
@@ -1165,8 +1212,14 @@
     <div class="container">
         <p>© 2026 ООО "КРАСКОН" — монтаж систем безопасности. Все права защищены.</p>
         <p style="margin-top: 12px;">* Цены ориентировочные, актуальны на 2026 год. Работаем по всей РФ.</p>
+        <p style="margin-top: 12px;"><a href="privacy.html">Политика конфиденциальности</a></p>
     </div>
 </footer>
+
+<div class="cookie-banner" id="cookieBanner" role="region" aria-label="Уведомление об использовании cookie" hidden>
+    <div>Сайт использует файлы cookie и сервис Яндекс.Метрика для сбора статистики посещений. Продолжая пользоваться сайтом, вы соглашаетесь с <a href="privacy.html">политикой конфиденциальности</a>.</div>
+    <button type="button" id="cookieAccept">Понятно</button>
+</div>
 
 <script>
     const rub = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
@@ -1227,6 +1280,15 @@
             else if(tabId === 'price-tab-btn') switchTab('price-tab-btn', 'price-pane');
             document.getElementById('tabs-section').scrollIntoView({ behavior: 'smooth' });
         });
+    });
+    // Уведомление о cookie
+    const cookieBanner = document.getElementById('cookieBanner');
+    let cookieAccepted = false;
+    try { cookieAccepted = localStorage.getItem('cookieAccepted') === '1'; } catch (e) {}
+    if (!cookieAccepted) cookieBanner.hidden = false;
+    document.getElementById('cookieAccept').addEventListener('click', () => {
+        cookieBanner.hidden = true;
+        try { localStorage.setItem('cookieAccepted', '1'); } catch (e) {}
     });
 </script>
 </body>
