@@ -347,6 +347,27 @@
             color: var(--text-light);
             margin-bottom: 28px;
         }
+        .music-btn {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--border-dim);
+            background: rgba(240, 200, 67, 0.08);
+            color: var(--text-light);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .music-btn:hover,
+        .music-btn[aria-pressed="true"] {
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+        .music-btn:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+        }
         .project-upload-row {
             display: flex;
             flex-wrap: wrap;
@@ -813,6 +834,7 @@
             <a href="#" class="tab-trigger" data-tab="portfolio-tab-btn">Объекты</a>
             <a href="#" class="tab-trigger" data-tab="price-tab-btn">Цены</a>
             <a href="#contact" class="btn-gold">Связь</a>
+            <button type="button" class="music-btn" id="musicBtn" aria-pressed="false" aria-label="Включить музыку" title="Включить музыку"><i class="fas fa-volume-mute" aria-hidden="true"></i></button>
         </div>
     </div>
 </header>
@@ -1485,6 +1507,49 @@
             document.getElementById('tabs-section').scrollIntoView({ behavior: 'smooth' });
         });
     });
+    // Музыка: браузеры не дают включить звук без действия посетителя,
+    // поэтому пробуем сразу, а при отказе запускаем по первому клику или нажатию клавиши.
+    const musicBtn = document.getElementById('musicBtn');
+    const music = new Audio();
+    music.preload = 'none';
+    music.volume = 0.5;
+    let musicOff = false;
+    try { musicOff = localStorage.getItem('musicOff') === '1'; } catch (e) {}
+    function showMusicState() {
+        const playing = !music.paused;
+        const label = playing ? 'Выключить музыку' : 'Включить музыку';
+        musicBtn.setAttribute('aria-pressed', String(playing));
+        musicBtn.setAttribute('aria-label', label);
+        musicBtn.title = label;
+        musicBtn.firstElementChild.className = playing ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+    }
+    function startMusic() {
+        if (!music.src) music.src = 'kraskon-song.mp3';
+        return music.play();
+    }
+    function stopWaitingForAction() {
+        removeEventListener('pointerdown', startOnFirstAction);
+        removeEventListener('keydown', startOnFirstAction);
+    }
+    function startOnFirstAction(event) {
+        if (musicBtn.contains(event.target)) return;
+        stopWaitingForAction();
+        if (!musicOff && music.paused) startMusic().catch(() => {});
+    }
+    ['play', 'pause', 'ended'].forEach(type => music.addEventListener(type, showMusicState));
+    musicBtn.addEventListener('click', () => {
+        stopWaitingForAction();
+        musicOff = !music.paused;
+        try { localStorage.setItem('musicOff', musicOff ? '1' : '0'); } catch (e) {}
+        if (musicOff) music.pause();
+        else startMusic().catch(() => {});
+    });
+    if (!musicOff) {
+        startMusic().catch(() => {
+            addEventListener('pointerdown', startOnFirstAction);
+            addEventListener('keydown', startOnFirstAction);
+        });
+    }
     // Уведомление о cookie
     const cookieBanner = document.getElementById('cookieBanner');
     let cookieAccepted = false;
